@@ -2,9 +2,10 @@
   background-color: #f4f4f4;
   list-style-type: none;
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: wrap;        
   align-items: center;
   height: 280px;
+
 }
 
 .list-component li {

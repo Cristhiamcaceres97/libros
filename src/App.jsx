@@ -7,10 +7,11 @@ import Buscador from "./Components/Buscador";
 import BookList from "./Components/BookList";
 import PaymentMethods from "./Components/PaymentMethods";
 import ListComponent from "./Components/ListComponent"; 
+import BookDetails from "./Components/BookDetails";
 
 const App = () => {
-  return (
-    <Router>
+  return (        
+    <Router>      
       <Navbar />
       <Routes>
         <Route path="/" element={<Inicio />} />
@@ -19,6 +20,7 @@ const App = () => {
         <Route path="/booklist" element={<BookList />} />
         <Route path="/paymentmethods" element={<PaymentMethods />} />
         <Route path="/ListComponent" element={<ListComponent />} />
+        <Route path="/bookDetails/:index" element={<BookDetails />} />
       </Routes>
     </Router>
   );

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { FaShoppingCart, FaTrashAlt, FaBook } from "react-icons/fa";
 import axios from "axios";
 import "./BookList.css";
+import { Link } from "react-router-dom";
 
 const BookList = () => {
   const [books, setBooks] = useState([]);
@@ -11,6 +12,7 @@ const BookList = () => {
   const [cartVisible, setCartVisible] = useState(false);
   const [totalPrice, setTotalPrice] = useState(0);
   const [bookQuantity, setBookQuantity] = useState({});
+  const [selectedBook, setSelectedBook] = useState(null);
 
   useEffect(() => {
     const fetchBooks = async () => {
@@ -22,44 +24,34 @@ const BookList = () => {
           "9781637386231",
           "9780810994553",
           "9781788622882",
-          "9780930289362",
-          "9780237535278",
-          "9780553381689",
-          "9783662598061",
-          "9781417750429",
-          "9788484702672",
-          "9781401289256",
-          "9781982115982",
-          "9781779502773",
-          "9780440412670",
-          "9780425288856",
-          "9789654487658",
-          "9781423776345",
-          "9781521451755",
-          "9780810994737",
-          "9788441520127",
-          "9781563895722",
-          "8934974080336",
-          "9781417751723",
-          "9781897767160",
-          "9789573318002",
           "9780439784542",
-          "9780062060617",
-          "9786047703739",
-          "9788497774208",
-          "9789707752993",
+          "9780061120084",
+          "9781984801814",
+          "9780142000088",
+          "9780679732761",
+          "9780545010221",
+          "9781451673319",
+          "9780142424179",
+          "9780141182605",
+          "9780060891541",
         ];
 
         const promises = bookIds.map((bookId) =>
           axios.get(
-            `https://openlibrary.org/api/books?bibkeys=${bookId}&format=json&jscmd=data`
+            `https://www.googleapis.com/books/v1/volumes?q=isbn:${bookId}&key=AIzaSyDM6HevyDLqCdIu1jnipamyYx_1QtruZIw
+            `
           )
         );
 
         const responses = await Promise.all(promises);
-        const booksData = responses.map(
-          (response) => response.data[Object.keys(response.data)[0]]
-        );
+        const booksData = responses.map((response) => {
+          const bookData = response.data.items[0].volumeInfo;
+          return {
+            title: bookData.title,
+            image: bookData.imageLinks?.thumbnail || "",
+            price: bookData.saleInfo?.listPrice?.amount || 0,
+          };
+        });
 
         const storedPrices = localStorage.getItem("prices");
         let prices = {};
@@ -68,7 +60,7 @@ const BookList = () => {
           prices = JSON.parse(storedPrices);
         } else {
           booksData.forEach((book) => {
-            prices[book.key] = generateRandomPrice();
+            prices[book.title] = book.price;
           });
 
           localStorage.setItem("prices", JSON.stringify(prices));
@@ -76,7 +68,7 @@ const BookList = () => {
 
         const booksWithPrice = booksData.map((book) => ({
           ...book,
-          price: prices[book.key],
+          price: prices[book.title],
         }));
 
         setBooks(booksWithPrice);
@@ -105,7 +97,7 @@ const BookList = () => {
     const calculateTotalPrice = () => {
       let total = 0;
       cart.forEach((book) => {
-        total += book.price * bookQuantity[book.key];
+        total += book.price * bookQuantity[book.title];
       });
       setTotalPrice(total);
     };
@@ -113,159 +105,119 @@ const BookList = () => {
     calculateTotalPrice();
   }, [cart, cartCount, bookQuantity]);
 
-  const generateRandomPrice = () => {
-    return Math.floor(Math.random() * (30000 - 5000 + 1) + 5000);
-  };
-
   const addToCart = (event, book) => {
     event.preventDefault();
     const updatedCart = [...cart];
 
-    const existingBook = updatedCart.find((item) => item.key === book.key);
+    const existingBook = updatedCart.find((item) => item.title === book.title);
     if (existingBook) {
       setBookQuantity((prevQuantity) => ({
         ...prevQuantity,
-        [book.key]: prevQuantity[book.key] + 1,
+        [book.title]: prevQuantity[book.title] + 1,
       }));
+      existingBook.quantity += 1;
     } else {
-      updatedCart.push(book);
+      updatedCart.push({ ...book, quantity: 1 });
       setBookQuantity((prevQuantity) => ({
         ...prevQuantity,
-        [book.key]: 1,
+        [book.title]: 1,
       }));
     }
 
     setCart(updatedCart);
-    setCartCount(cartCount + 1);
+    setCartCount((prevCount) => prevCount + 1);
     setBounce(true);
+    setTimeout(() => setBounce(false), 1000);
   };
 
-  const removeBookFromCart = (bookToRemove) => {
-    const updatedCart = cart.filter((book) => book.key !== bookToRemove.key);
+  const removeFromCart = (event, book) => {
+    event.preventDefault();
+    const updatedCart = cart.filter((item) => item.title !== book.title);
+
     setCart(updatedCart);
-    setCartCount(cartCount - bookQuantity[bookToRemove.key]);
+    setCartCount((prevCount) => prevCount - bookQuantity[book.title]);
     setBookQuantity((prevQuantity) => {
-      const updatedQuantity = { ...prevQuantity };
-      delete updatedQuantity[bookToRemove.key];
-      return updatedQuantity;
+      const quantity = { ...prevQuantity };
+      delete quantity[book.title];
+      return quantity;
     });
   };
 
-  const emptyCart = () => {
-    setCart([]);
-    setCartCount(0);
-    setBookQuantity({});
+  const handleQuantityChange = (event, book) => {
+    const { value } = event.target;
+    setBookQuantity((prevQuantity) => ({
+      ...prevQuantity,
+      [book.title]: parseInt(value),
+    }));
   };
 
-  const toggleCartVisibility = () => {
-    if (cart.length > 0) {
-      setCartVisible(!cartVisible);
-    }
-  };
-
-  const onAnimationEnd = () => {
-    setBounce(false);
+  const handleCartToggle = () => {
+    setCartVisible((prevState) => !prevState);
   };
 
   return (
-    <div className="book-list-container">
-      <h2>
-        Lista de Libros
-        <button className="cart-button" onClick={toggleCartVisibility}>
-          <FaShoppingCart
-            className={`cart-icon ${bounce ? "bounce" : ""}`}
-            onAnimationEnd={onAnimationEnd}
-          />
-          <span className={`cart-count ${bounce ? "bounce" : ""}`}>
-            {cartCount}
-          </span>
-        </button>
-      </h2>
-      {books.length > 0 ? (
-        <ul className="book-list">
-          {books.map((book) => (
-            <li className="book-item" key={book.key}>
-              {book?.title && <h3>{book.title}</h3>}
-              {book?.cover_i ? (
-                <img
-                  src={`https://covers.openlibrary.org/b/id/${book.cover_i}-M.jpg`}
-                  alt={book.title}
-                />
-              ) : (
-                <p>No hay imagen disponible para este libro.</p>
-              )}
-              {book.authors && (
-                <p>
-                  Autor: {book.authors.map((author) => author.name).join(", ")}
-                </p>
-              )}
-              {book.languages && (
-                <p>
-                  Lenguaje:{" "}
-                  {book.languages.map((language) => language.name).join(", ")}
-                </p>
-              )}
-              <p className="precio-libros">
-                Precio: ${book.price} <b>COP</b>
-              </p>
-              <a
-                href="#"
-                className="ov-btn-slide-top"
-                onClick={(event) => addToCart(event, book)}
-              >
-                <FaShoppingCart size={20} /> Añadir al Carrito
-              </a>
-              <a href="#" className="ov-btn-slide-close">
-                <FaBook size={20} />
-                Ver Más Detalles
-              </a>
-            </li>
-          ))}
-        </ul>
-      ) : (
-        <p>No hay libros disponibles.</p>
-      )}
+    <div>
+      <div className="book-list">
+        {books.map((book) => (
+          <div className="book" key={book.title}>
+            <img src={book.image} alt={book.title} />
+            <h3>{book.title}</h3>
+            <p>Precio: ${book.price}</p>
+            <button onClick={(event) => addToCart(event, book)}>
+              <FaShoppingCart /> Agregar al carrito
+            </button>
+            <button> 📚 Ver Mas Detalles</button>
+          </div>
+        ))}
+      </div>
+      <div className="cart-toggle" onClick={handleCartToggle}>
+        <FaShoppingCart className="cart-icon" />
+        {cartCount > 0 && <span className="cart-count">{cartCount}</span>}
+      </div>
 
-      {cart.length > 0 && cartVisible && (
-        <div className={`cart-popup ${cartVisible ? "open" : ""}`}>
+      {cartVisible && (
+        <div className={`cart ${cartVisible ? "open" : ""}`}>
           <div className="cart-header">
-            <h2>Carrito de Compras</h2>
-            <button className="close-cart" onClick={toggleCartVisibility}>
+            <h2>Carrito de compras</h2>
+            <button className="cart-close" onClick={handleCartToggle}>
               X
             </button>
           </div>
-          <div className="cart-content">
-            {cart.map((book) => (
-              <div className="cart-item" key={book.key}>
-                {book?.title && <h3>{book.title}</h3>}
-                {book?.cover_i ? (
-                  <img
-                    src={`https://covers.openlibrary.org/b/id/${book.cover_i}-M.jpg`}
-                    alt={book.title}
-                  />
-                ) : (
-                  <p>No hay imagen disponible para este libro.</p>
-                )}
-                <p>Cantidad: {bookQuantity[book.key]}</p>
-                <p>Precio unitario: ${book.price} COP</p>
-                <p>Subtotal: ${book.price * bookQuantity[book.key]} COP</p>
-                <button
-                  className="remove-button"
-                  onClick={() => removeBookFromCart(book)}
-                >
-                  <FaTrashAlt size={20} /> Quitar del Carrito
-                </button>
+          {cart.length === 0 ? (
+            <p>No hay libros en el carrito.</p>
+          ) : (
+            <div>
+              {cart.map((book) => (
+                <div className="cart-item" key={book.title}>
+                  <div className="cart-item-info">
+                    <img src={book.image} alt={book.title} />
+                    <div>
+                      <h3>{book.title}</h3>
+                      <p>Precio: ${book.price}</p>
+                      <p>Cantidad: {book.quantity}</p>
+                    </div>
+                  </div>
+                  <button
+                    className="remove-btn"
+                    onClick={(event) => removeFromCart(event, book)}
+                  >
+                    <FaTrashAlt />
+                  </button>
+                </div>
+              ))}
+              <div className="cart-total">
+                <h3>Total: ${totalPrice}</h3>
+                <Link to="/checkout">
+                  <button className="checkout-btn">
+                    <FaBook /> Ir a pagar
+                  </button>
+                </Link>
               </div>
-            ))}
-            <div className="cart-total">
-              <p>Total: ${totalPrice} COP</p>
-              <button className="empty-button" onClick={emptyCart}>
-                Vaciar Carrito
-              </button>
             </div>
-          </div>
+          )}
         </div>
       )}
+      {bounce && <div className="bounce" />}
     </div>
   );
 };
