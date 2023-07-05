@@ -16,12 +16,18 @@ const Navbar = () => {
           src="https://images.vexels.com/media/users/3/139752/isolated/preview/532e26143a0435e9c6ca7f436474389f-icono-de-libros.png"
           height="70px"
           width="100px"
-          alt="logo"
+          alt="logo"     
         />
         <span>Paco's Book</span>
       </div>
+<<<<<<< HEAD
       <ul className="nav-menu">
         <div className="menu-navbar">
+=======
+      <ul className="nav-menu">          
+        <li className="nombre-logo">Paco's Book</li>
+        <div className="menu-navbar">       
+>>>>>>> b1db40d5e27ee7e88c3b88b77df96334bad4803e
           <li>
             <NavLink to="/" exact activeClassName="active-link">
               Inicio

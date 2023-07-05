@@ -12,7 +12,8 @@ const Buscador = () => {
         `https://openlibrary.org/search.json?q=${busqueda}`
       );
 
-      const data = response.data.docs;
+      const data = response.data.docs;                   
+                                                   
       setResultados(data);
     } catch (error) {
       console.error("Error al realizar la búsqueda:", error);

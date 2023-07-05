@@ -6,9 +6,9 @@ const ListComponent = () => {
     <ul className="list-component">
       <li className="lista-uno">
         ¡Descárgate la App
-        <br />
+        <br />        
         GRATIS!
-        <br />
+        <br />             
         <div className="list-imagenes">
           <a href="https://www.apple.com/co/app-store/" target="_blank">
             <img

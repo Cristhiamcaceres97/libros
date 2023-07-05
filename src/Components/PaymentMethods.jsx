@@ -14,11 +14,11 @@ const imagesUrls = [
 const PaymentMethods = () => {
   return (
     <div className="payment-methods-container">
-      {imagesUrls.map((url, index) => (
+      {imagesUrls.map((url, index) => (      
         <img src={url} alt={`Payment Method ${index + 1}`} key={index} />
       ))}
-    </div>
-  );
+    </div>     
+  );           
 };
 
 export default PaymentMethods;

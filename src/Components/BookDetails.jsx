@@ -46,6 +46,10 @@ const BookDetails = ({ match }) => {
         </p>
       )}
       {book.description && <p>Sinopsis: {book.description}</p>}
+<<<<<<< HEAD
+=======
+      {/* Aquí puedes agregar más información sobre el libro */}
+>>>>>>> b1db40d5e27ee7e88c3b88b77df96334bad4803e
     </div>
   );
 };

@@ -6,12 +6,16 @@ import Carousel from "./Components/Carousel";
 import Buscador from "./Components/Buscador";
 import BookList from "./Components/BookList";
 import PaymentMethods from "./Components/PaymentMethods";
+<<<<<<< HEAD
 import ListComponent from "./Components/ListComponent";
+=======
+import ListComponent from "./Components/ListComponent"; 
+>>>>>>> b1db40d5e27ee7e88c3b88b77df96334bad4803e
 import BookDetails from "./Components/BookDetails";
 
 const App = () => {
-  return (
-    <Router>
+  return (        
+    <Router>      
       <Navbar />
       <Routes>
         <Route path="/" element={<Inicio />} />
