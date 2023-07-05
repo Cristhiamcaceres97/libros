@@ -18,9 +18,9 @@ const Navbar = () => {
           width="100px"
           alt="logo"
         />
+        <span>Paco's Book</span>
       </div>
       <ul className="nav-menu">
-        <li className="nombre-logo">Paco's Book</li>
         <div className="menu-navbar">
           <li>
             <NavLink to="/" exact activeClassName="active-link">

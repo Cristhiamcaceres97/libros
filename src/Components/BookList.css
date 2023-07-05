@@ -1,13 +1,62 @@
+.book {
+  border: 2px red solid;
+  text-align: center;
+  height: auto;
+}
+
+.book img {
+  width: 180px;
+}
+
+.book h3 {
+  font-size: 25px;
+  color: rgb(185, 53, 53);
+}
+
+.book p {
+  color: #e68210;
+}
+
+.book button {
+  width: 150px;
+  height: 30px;
+  border-radius: 10px;
+  border: 1px transparent;
+  cursor: pointer;
+}
+
+.cart-toggle {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 999;
+  cursor: pointer;
+}
+
+.cart-toggle .cart-icon {
+  font-size: 35px;
+}
+body {
+  background-color: rgb(118, 158, 173);
+}
+
 .book-list {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   grid-gap: 20px;
   list-style: none;
+  margin: 3%;
 }
 
 .book-item {
-  border: 1px solid #ccc;
+  border: 1px solid #990e0e;
   padding: 20px;
+  cursor: pointer;
+}
+
+.book-item:hover {
+  transition: calc(0.5s);
+  background-color: rgb(240, 225, 225);
 }
 
 .book-item h3 {
@@ -23,6 +72,24 @@
 .book-item button:hover {
   background-color: #0069d9;
 }
+
+.cart {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 30%;
+  height: 100%;
+  background-color: white;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+  padding: 20px;
+  transition: transform 0.3s;
+  transform: translateX(-100%);
+}
+
+.cart.open {
+  transform: translateX(0);
+}
+
 
 .cart-icon {
   color: red;
@@ -49,6 +116,7 @@
 }
 
 .cart-button {
+  position: absolute;
   background: none;
   border: none;
   cursor: pointer;
@@ -113,6 +181,11 @@
   margin-top: 3px;
 }
 
+.ov-btn-slide-top b {
+  padding-left: 15px;
+
+}
+
 .ov-btn-slide-top {
   background: #fff;
   color: #4741d7;
@@ -123,6 +196,9 @@
   z-index: 1;
   overflow: hidden;
   display: inline-block;
+  margin-left: 20%;
+  margin-top: 5%;
+  text-decoration: none;
 }
 .ov-btn-slide-top:hover {
   color: #fff;
@@ -160,6 +236,13 @@
   z-index: 1;
   overflow: hidden;
   display: inline-block;
+  margin-left: 20%;
+  width: 159px;
+  text-decoration: none;
+}
+
+.ov-btn-slide-close b {
+  padding-left: 12px;
 }
 .ov-btn-slide-close:before,
 .ov-btn-slide-close:after {
@@ -243,7 +326,7 @@
 
 .cart-content {
   overflow-y: auto;
-  max-height: 85%;
+  max-height: 100vh;
   padding: 20px;
   background-color: rgb(167, 165, 165);
 }
@@ -268,11 +351,14 @@
 }
 
 .cart-total {
-  background-color: #f0e6e6;
+  position: absolute;
+  top: 75%;
+  background-color:transparent;
   padding: 10px;
   width: 100%;
   box-sizing: border-box;
   text-align: right;
+
 }
 
 .cart-total p {
@@ -294,4 +380,18 @@
 
 .remove-book-button svg {
   color: #ff0000;
+}
+
+.cart-footer {
+  border: 1px red solid;
+  width: 100%;
+  height: 8%;
+  text-align: center;
+  position: absolute;
+  top: 95%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: white;
+  padding-top: 20px;
+  
 }
